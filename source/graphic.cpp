@@ -135,6 +135,15 @@ void Window::draw_text( char *msg, int x, int y, Uint32 pixel){
 	print(screen,x,y,msg,pixel);
 }
 
+void Window::draw_surface(SDL_Surface *src,int x, int y){
+	if(fliping){
+		SDL_Rect rect;
+		rect.x = x;
+		rect.y = y;
+		SDL_BlitSurface(src,0,screen,&rect);
+	}
+}
+
 
 SDL_Surface *load_bmp_fm(char *name, int size){
 	SDL_Surface *temp;
@@ -168,4 +177,25 @@ SDL_Surface *load_img_fm(char *name, int size){
 	temp = SDL_DisplayFormat(temp);
 	printf("load texture \n");
 	return temp;
+}
+
+
+void init_logo(){
+	SDL_Surface *logo;
+	int done = 0;
+	int ret;
+	Window *w = new Window;
+	w = Init_Window(320,240,32,"logo");
+	logo = load_img_fm(sdl_png_start,sdl_png_size);
+	while(!done){
+		ret = SDL_SetAlpha(logo,0,0);
+		printf("ret-> %d\n",ret);
+		w->draw_surface(logo,0,0);
+		w->flip();
+		SDL_Delay(2000);
+		w->clean();
+		done = 1;
+	}
+	free_Window(w);
+	SDL_FreeSurface(logo);
 }

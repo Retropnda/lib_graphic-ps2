@@ -13,6 +13,7 @@ DISAÑADA POR RETROPANDA USE ESTE CODIGO COMO QUIERA */
 #include "Sprite.h"
 #include "pixel.h"
 #include "input.h"
+#include "file.h"
 
 
 
@@ -38,6 +39,7 @@ typedef struct WINDOW
 	void rect(int x, int y, int w, int h, Uint32 pixel);
 	void fps_sincronizar(int FRECUENCIA);
 	void draw_text(char *msg, int x, int y, Uint32 pixel); //esto solo funcionara si la profundidad es de 16 bpp
+	void draw_surface(SDL_Surface *src,int x, int y);
 } Window;
 
 void Debug(const char *msg);
@@ -45,6 +47,7 @@ Window *Init_Window(int w, int h, int bpp, const char *msg);
 void free_Window(Window *w);
 SDL_Surface *load_bmp_fm(char *name, int size);
 SDL_Surface *load_img_fm(char *name, int size);
+void init_logo();
 
 
 #endif

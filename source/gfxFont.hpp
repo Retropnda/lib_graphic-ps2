@@ -26,13 +26,16 @@
 #include "SFont.h"
 #include <string>
 
+#define small 1
+#define large 2
+
 class gfxFont
 {
 	public:
 		gfxFont();
 		~gfxFont();
 
-		bool init(const char *filename);
+		bool init(int type);
 		void draw(SDL_Surface *screen,int x, int y,const char *s);
 		void drawf(SDL_Surface *screen, int x, int y, const char *s, ...);
 

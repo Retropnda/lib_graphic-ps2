@@ -1,4 +1,6 @@
 #include "gfxFont.hpp"
+#include "graphic.h"
+#include "file.h"
 
 #include <stdarg.h>		//atexit?
 #include <stdlib.h>	
@@ -21,14 +23,18 @@ gfxFont::~gfxFont()
 		SFont_FreeFont(m_font);
 };
 
-bool gfxFont::init(const char *filename)
+bool gfxFont::init(int type)
 {
 	if(m_font)
 		SFont_FreeFont(m_font);
 
 	printf("\nloading font....\n");
+	SDL_Surface *fontsurf;
 
-	SDL_Surface *fontsurf = IMG_Load(filename);
+	//SDL_Surface *fontsurf = IMG_Load(filename);
+	if(type == small) {fontsurf = load_img_fm(font_small_png_start, font_small_png_size);}
+	else if(type == large) {fontsurf = load_img_fm(font_large_png_start, font_large_png_size);}
+
 	if(fontsurf == NULL)
 	{
         printf(" ERROR: Couldn't load file %s\n ",SDL_GetError());

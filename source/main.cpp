@@ -1,9 +1,6 @@
 #include "graphic.h"
-#if USE_PS2
-#include "file.h"
-#else
-#include <SDL/SDL.h>
-#endif
+#include "sfx.h"
+
 
 
 enum{
@@ -17,17 +14,36 @@ enum{
 
 Sprite *spr[max_spr];
 Input *joystick;
+static int last_dir = right;
+static int count = 0;
+Window *w;
+gfxFont *my_font;
+int x,y;
+
+void draw_personaje(){
+	if(joystick->get_hat(hat_down)){y+=1; spr[down]->animate()->draw(w->screen,x,y); last_dir = down;}
+	if(joystick->get_hat(hat_up)){y-=1;   spr[up]->animate()->draw(w->screen,x,y);   last_dir = up;}
+	if(joystick->get_hat(hat_left)){x-=1; spr[left]->animate()->draw(w->screen,x,y); last_dir = left;}
+	if(joystick->get_hat(hat_right)){x+=1;spr[right]->animate()->draw(w->screen,x,y); last_dir = right;}
+
+	spr[last_dir]->draw(w->screen,x,y);
+
+}
 
 int main(int argc, char **argv)
 {
-	Window *w;
+	init_logo();
+	
 	w = new Window;
 	w = Init_Window(320, 240,24, "test");
 	joystick = new Input;
 	joystick->init();
-	//SDL_InitSubSystem(SDL_INIT_AUDIO);
-	int x,y;
+	//sfx_init();
+	my_font = new gfxFont;
+	my_font->init(large);
+	
 	x=y=0;
+	int done = 0;
 
 	//lee desde memoria 
 	SDL_Surface *img = load_img_fm(img_bmp_start,img_bmp_size);
@@ -40,30 +56,48 @@ int main(int argc, char **argv)
    	spr[up]   = new Sprite(spr[sheet]->getRect(1,32*3,6*32,32),6,30);
 
    	spr[left] = new Sprite(spr[sheet]->getRect(1,32*2,6*32,32),6,30);
-   	spr[left]->reverseAnimation();
+   	spr[left]->reverseAnimation()->flipHorizontal();
 
    	spr[right] = new Sprite(spr[sheet]->getRect(1,32*2,6*32,32),6,30);
-   	spr[right]->flipHorizontal();
+   	//spr[right]->flipHorizontal();
 
-	while (1)
+	while (!done)
 	{
-		joystick->update_event();
-
-		if(joystick->get_hat(hat_down)){y+=1;}
-		if(joystick->get_hat(hat_up)){y-=1;}
-		if(joystick->get_hat(hat_left)){x-=1;}
-		if(joystick->get_hat(hat_right)){x+=1;}
+		
+		joystick->input_read();
 
 		SDL_BlitSurface(mega,0,w->screen,0);
-		spr[right]->animate()->draw(w->screen,x,y);
-		w->line(RGB2(w->screen,255,0,0),320,240, 1, 1);
-		w->draw_text("hola ", 10, 10, RGB2(w->screen,255,0,0));
-		//w->rect(100, 100, 10, 10,RGB(rand()%255, rand()%255, rand()%255));
+
+
+		if(joystick->button_up == PS2_CROSS){done =1;}
+		if(joystick->button_up == PS2_CIRCULE){x--;}
+		if(joystick->button_up == PS2_TRIANGLE){y++;}
+		if(joystick->button_up == PS2_SCUARE){y--;}
+
+		//if(joystick->button_down == PS2_CROSS){x++;}
+		if(joystick->button_down == PS2_CIRCULE){x--;}
+		if(joystick->button_down == PS2_TRIANGLE){y++;}
+		if(joystick->button_down == PS2_SCUARE){y--;}
+		
+		
+
+		
+		my_font->draw(w->screen,20,20,"RETROPANDA");
+		my_font->drawf(w->screen,20,60,"%d",count);
+		draw_personaje();
+		w->line(RGB2(w->screen,255,0,0),20,90, 1, 1);
+		w->draw_text("hola este es un motor para ps2 v0.01 ", 10, 230, RGB2(w->screen,255,255,255));
+		
 		w->flip();
 		w->clean();
 		w->fps_sincronizar(10);
+		count++;
 	}
+	 SDL_Quit();
+	 //sfx_close();
      free_Window(w);
+     delete joystick;
+     delete my_font;
     
 
 	return 0;
