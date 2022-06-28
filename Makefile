@@ -21,7 +21,7 @@ EE_CXXFLAGS += -DUSE_PS2
 EE_INCS = -I../../ -I$(PS2SDK)/ports/include
 EE_LDFLAGS = -L../../lib/ -L$(PS2SDK)/ports/lib -L$(PS2DEV)/gsKit/lib
 EE_LIBS = -lc -L$(PS2DEV)/gsKit/lib -L../lib -lsdlmixer -lSDL_image -lpng -ljpeg -lsdl -lgskit -ldmakit -laudsrv -lmass -lc -lm -lm2
-EE_OBJS += obj/img_bmp.o obj/mega_bmp.o
+EE_OBJS += obj/img_bmp.o obj/mega_bmp.o obj/sdl_png.o obj/font_large_png.o obj/font_small_png.o
 
 
 
@@ -32,11 +32,28 @@ all:$(EE_BIN)
 %.o:%.cpp
 	$(EE_CXX) -o $@ -c $^ $(EE_INCS)
 
+
+#data-----------------------------
+
 obj/img_bmp.o:data/spr.bmp
 	$(PS2SDK)/bin/bin2o $< $@ img_bmp
 
 obj/mega_bmp.o:data/mega.bmp
 	$(PS2SDK)/bin/bin2o $< $@ mega_bmp
+
+
+obj/sdl_png.o:data/sdl.png
+	$(PS2SDK)/bin/bin2o $< $@ sdl_png
+
+obj/font_large_png.o:data/font_large.png
+	$(PS2SDK)/bin/bin2o $< $@ font_large_png
+
+obj/font_small_png.o:data/font_small.png
+	$(PS2SDK)/bin/bin2o $< $@ font_small_png
+
+
+
+#data-------------------------------
 
 
 clean:
